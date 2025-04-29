@@ -1,4 +1,5 @@
-# Algorithm Comparison - Perlin Noise, Diamond Square, and Voronoi Biome
+# Procedural Terrain Generation<br/>
+## Perlin Noise, Diamond Square, and Voronoi Biome
 Ryan Vera<br/>
 Qitong Liu
 
@@ -53,7 +54,7 @@ Voronoi Biome generation is based on Voronoi diagrams, which partition space int
 ## How to Run
 1. Clone the repository.
 2. Run each algorithm file individually to generate outputs.
-3. Compare the results visually or through performance metrics.
+3. Compare the results visually
 
 ### Output File Naming
 The `run_perlin_noise_gaussian` function generates both 2D and 3D plots of Gaussian-smoothed Perlin noise. The output file names follow the structure:
