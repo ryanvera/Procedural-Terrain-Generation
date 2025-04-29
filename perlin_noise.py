@@ -146,17 +146,14 @@ def perlin(x:float, y:float, permutations) -> float:
 def generate_perlin_noise(width:int, height:int, scale:float=1.0) -> np.ndarray[float]:
     """
     Generate a 2D array of Perlin noise values. This is a non-smoothed version of Perlin noise.
-        scale (float): The scale factor for the noise, which determines the frequency of the noise pattern.
-        np.ndarray: A 2D array of Perlin noise values, where each value represents the noise intensity at a specific point.
-
 
     Args:
         width (int): The width of the noise array.
         height (int): The height of the noise array.
-        scale (float): The scale factor for the noise.
+        scale (float, optional): The scale factor for the noise, which determines the frequency of the noise pattern. Defaults to 1.0.
 
     Returns:
-        np.ndarray: A 2D array of Perlin noise values.
+        np.ndarray[float]: A 2D array of Perlin noise values, where each value represents the noise intensity at a specific point.
     
     Notes:
         The nested for loops iterate over each pixel in the 2D grid (height x width) and compute the Perlin noise value 
@@ -222,7 +219,7 @@ def gaussian_smooth(noise_grid:np.ndarray[float], sigma:float) -> np.ndarray[flo
 
 
 
-def normalize_range(noise_grid:np.ndarray[float], min_val:float=-1, max_val:float=1) -> np.ndarray[float]:
+def normalize_range(noise_grid:np.ndarray[float], min_val:float=0, max_val:float=1) -> np.ndarray[float]:
     """
     Normalize the values in a 2D noise grid to a specified range.
     Args:
@@ -240,21 +237,19 @@ def normalize_range(noise_grid:np.ndarray[float], min_val:float=-1, max_val:floa
     normalized_grid = (noise_grid - min_noise) / (max_noise - min_noise)
 
     # Scale to the desired range [min_val, max_val]
-    scaled_grid = normalized_grid * (max_val - min_val) + min_val
+    # scaled_grid = normalized_grid * (max_val - min_val) + min_val
 
-    return scaled_grid
+    return normalized_grid
 
 
 
-def run_perlin_noise(width:int, height:int, min_z:float, max_z:float, show_plots:bool) -> None:
+def run_perlin_noise(size:tuple, show_plots:bool) -> None:
     """
     Generates and visualizes 2D Perlin noise as both a 2D image and a 3D surface plot.
 
     Args:
-        width (int): The width of the Perlin noise grid.
-        height (int): The height of the Perlin noise grid.
-        min_z (float): The minimum value for normalizing the Perlin noise.
-        max_z (float): The maximum value for normalizing the Perlin noise.
+        size (tuple): A tuple containing the width and height of the Perlin noise grid.
+        show_plots (bool): Whether to display the generated plots.
 
     Returns:
         None
@@ -275,10 +270,10 @@ def run_perlin_noise(width:int, height:int, min_z:float, max_z:float, show_plots
     
     #  Create a 2D grid of Perlin noise
     print("Generating Perlin noise...")
-    noise = generate_perlin_noise(width, height, scale=0.1)  # Generate Perlin noise
+    noise = generate_perlin_noise(size[0], size[1], scale=0.1)  # Generate Perlin noise
 
     # Normalize the noise values to a specified range
-    noise = normalize_range(noise, min_z, max_z)  # Normalize the noise values
+    noise = normalize_range(noise)  # Normalize the noise values
 
     # 2D Plot the generated noise
     plt.imshow(noise, cmap='Greens', interpolation='lanczos')
@@ -292,8 +287,8 @@ def run_perlin_noise(width:int, height:int, min_z:float, max_z:float, show_plots
     
 
     # 3D Plot the generated noise
-    x = np.linspace(0, width-1, width)
-    y = np.linspace(0, height-1, height)
+    x = np.linspace(0, size[0]-1, size[0])
+    y = np.linspace(0, size[1]-1, size[1])
     x, y = np.meshgrid(x, y)
 
     # Plotting the 2D Perlin noise in a 3D surface plot
@@ -316,7 +311,7 @@ def run_perlin_noise(width:int, height:int, min_z:float, max_z:float, show_plots
 
 
 
-def run_perlin_noise_fractal(width:int, height:int, min_z:float, max_z:float, octaves:int, persistence:float, amplitude:float, scale:float, colors:list[str], bounds:list[float], show_plots:bool, iterNum:int) -> None:
+def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitude:float, scale:float, colors:list[str], bounds:list[float], show_plots:bool, iterNum:int=0) -> None:
     """
     Generates and visualizes fractal Perlin noise in both 2D and 3D plots.
     This function creates fractal Perlin noise using the specified parameters, normalizes the noise
@@ -324,13 +319,15 @@ def run_perlin_noise_fractal(width:int, height:int, min_z:float, max_z:float, oc
     The generated plots are saved as image files.\
     
     Args:
-        width (int): The width of the noise grid.
-        height (int): The height of the noise grid.
-        min_z (float): The minimum value for normalizing the noise.
-        max_z (float): The maximum value for normalizing the noise.
+        size (tuple): A tuple containing the width and height of the noise grid.
         octaves (int): The number of octaves for the fractal noise generation.
         persistence (float): The persistence value controlling the amplitude of each octave.
         amplitude (float): The initial amplitude of the noise.
+        scale (float): The scale factor for the noise.
+        colors (list[str]): A list of colors for different land types in the visualization.
+        bounds (list[float]): A list of boundary values for the land types.
+        show_plots (bool): Whether to display the generated plots.
+        iterNum (int, optional): The iteration number for saving unique filenames. Defaults to 0.
 
     Returns:
         None
@@ -338,10 +335,10 @@ def run_perlin_noise_fractal(width:int, height:int, min_z:float, max_z:float, oc
     save_filepath = "images/perlin/fractal/fractal_perlin"
 
     print("Generating fractal Perlin noise...")
-    noise = generate_fractal_noise(width, height, octaves, persistence, amplitude, scale)  # Generate fractal Perlin noise
+    noise = generate_fractal_noise(grid_size[0], grid_size[1], octaves, persistence, amplitude, scale)  # Generate fractal Perlin noise
 
     # Normalize the noise values to a specified range
-    noise = normalize_range(noise, min_z, max_z)  # Normalize the noise values
+    noise = normalize_range(noise)  # Normalize the noise values
 
     # Define custom colormap
     cmap = ListedColormap(colors)
@@ -351,7 +348,7 @@ def run_perlin_noise_fractal(width:int, height:int, min_z:float, max_z:float, oc
     plt.imshow(noise, cmap=cmap, norm=norm, interpolation='lanczos')
     plt.colorbar()  # Add a color bar to the plot
     plt.title("Fractal Smoothed Perlin Noise")
-    plt.text(10, width-75, f"Octaves: {octaves}\nPersistence: {persistence}\nAmplitude: {amplitude}\nScale: {scale}", fontsize=8, color='red', ha='left', va='top')
+    plt.text(10, size[0]-75, f"Octaves: {octaves}\nPersistence: {persistence}\nAmplitude: {amplitude}\nScale: {scale}", fontsize=8, color='red', ha='left', va='top')
     plt.savefig(f"{save_filepath}_2d_ {iterNum}.png", dpi=300)  # Save the plot as an image
     print("Plotting 2D fractal Perlin noise...")
     if show_plots:
@@ -360,8 +357,8 @@ def run_perlin_noise_fractal(width:int, height:int, min_z:float, max_z:float, oc
 
 
     # 3D Plot the generated noise
-    x = np.linspace(0, width-1, width)
-    y = np.linspace(0, height-1, height)
+    x = np.linspace(0, size[0]-1, size[0])
+    y = np.linspace(0, size[1]-1, size[1])
     x, y = np.meshgrid(x, y)
 
     # Plotting the 2D Perlin noise in a 3D surface plot
@@ -389,7 +386,7 @@ def run_perlin_noise_fractal(width:int, height:int, min_z:float, max_z:float, oc
 
 
 
-def run_perlin_noise_gaussian(width:int, height:int, min_z:float, max_z:float, sigmas:list[int], colors:list[str], bounds:list[float], show_plots=True) -> None:
+def run_perlin_noise_gaussian(size:tuple, sigmas:list[int], colors:list[str], bounds:list[float], show_plots=True) -> None:
     """
     Generates and visualizes Gaussian-smoothed Perlin noise in both 2D and 3D plots.
     This function creates Perlin noise, applies Gaussian smoothing, normalizes the noise
@@ -397,11 +394,11 @@ def run_perlin_noise_gaussian(width:int, height:int, min_z:float, max_z:float, s
     The generated plots are saved as image files.
 
     Args:
-        width (int): The width of the noise grid.
-        height (int): The height of the noise grid.
-        min_z (float): The minimum value for normalizing the noise.
-        max_z (float): The maximum value for normalizing the noise.
-        sigma (float): The standard deviation for Gaussian smoothing.
+        size (tuple): A tuple containing the width and height of the noise grid.
+        sigmas (list[int]): A list of sigma values for Gaussian smoothing.
+        colors (list[str]): A list of colors for different land types in the visualization.
+        bounds (list[float]): A list of boundary values for the land types.
+        show_plots (bool, optional): Whether to display the generated plots. Defaults to True.
 
     Returns:
         None
@@ -414,7 +411,7 @@ def run_perlin_noise_gaussian(width:int, height:int, min_z:float, max_z:float, s
 
     # Create a 2D grid of Perlin noise and apply Gaussian smoothing
     print("Generating Perlin noise...")
-    noise = generate_perlin_noise(width, height, scale=0.1)  # Generate Perlin noise
+    noise = generate_perlin_noise(size[0], size[1], scale=0.1)  # Generate Perlin noise
 
     # Run Gaussian smoothing for each sigma value on singular Perlin noise generation
     for sigma in sigmas:
@@ -424,7 +421,7 @@ def run_perlin_noise_gaussian(width:int, height:int, min_z:float, max_z:float, s
         noise = gaussian_smooth(noise, sigma)  # Smooth the noise values
 
         # Normalize the noise values to a specified range
-        noise = normalize_range(noise, min_z, max_z)  # Normalize the noise values
+        noise = normalize_range(noise)  # Normalize the noise values
 
         # 2D Plot the smoothed noise
         plt.imshow(noise, cmap=cmap, norm=norm, interpolation='lanczos')
@@ -437,8 +434,8 @@ def run_perlin_noise_gaussian(width:int, height:int, min_z:float, max_z:float, s
         plt.close()
 
         # 3D Plot the smoothed noise
-        x = np.linspace(0, width-1, width)
-        y = np.linspace(0, height-1, height)
+        x = np.linspace(0, size[0]-1, size[0])
+        y = np.linspace(0, size[1]-1, size[1])
         x, y = np.meshgrid(x, y)
 
         # Plotting the smoothed Perlin noise in a 3D surface plot
@@ -494,9 +491,7 @@ if __name__ == "__main__":
 
 
     # Hyperparameters for Perlin noise grid
-    grid_size = 256
-    width, height = grid_size, grid_size   # Size of the grid for Perlin noise generation
-    min_z, max_z = 0, 1                    # Range for the Perlin noise values
+    grid_size = (256, 256)
 
 
     # Hyperparameters to dictate the land type colors and boundaries
@@ -505,30 +500,10 @@ if __name__ == "__main__":
     land_type_colors = ['blue', 'green', 'darkgreen','grey', 'white']  # Colors for different land types 
 
 
-    run_perlin_noise( width=width, \
-                    height = height, \
-                    min_z = min_z, \
-                    max_z = max_z, \
-                    show_plots=False)  # Run the Perlin noise generation and plotting
+    # run_perlin_noise( size = grid_size, \
+    #                 show_plots=False)  # Run the Perlin noise generation and plotting
 
-
-    # run_perlin_noise_fractal( width=width, \
-    #                         height=height, \
-    #                         min_z=min_z, \
-    #                         max_z=max_z, \
-    #                         octaves=4, \
-    #                         persistence=0.5, \
-    #                         amplitude=0.6, \
-    #                         scale=.002, \
-    #                         colors=land_type_colors, \
-    #                         bounds=land_type_boundaries, \
-    #                         show_plots=False)  # Run the fractal Perlin noise generation and plotting
-
-
-    run_perlin_noise_gaussian( width=width, \
-                            height=height, \
-                            min_z=min_z, \
-                            max_z=max_z, \
+    run_perlin_noise_gaussian( size=grid_size, \
                             sigmas=[0, 0.5, 1, 10, 25, 50, 75, 100, 250], \
                             colors=land_type_colors, \
                             bounds=land_type_boundaries, \
@@ -536,38 +511,48 @@ if __name__ == "__main__":
 
 
 
+
+    run_perlin_noise_fractal( size=grid_size, \
+                            octaves=7, \
+                            persistence=0.5, \
+                            amplitude=1.75, \
+                            scale=400, \
+                            colors=land_type_colors, \
+                            bounds=land_type_boundaries, \
+                            show_plots=False)  # Run the fractal Perlin noise generation and plotting
+
+
+
 # Run fractal Perlin noise with various combinations of parameters
-octave_values = [2, 4, 6, 8, 10]
-persistence_values = [0.3, 0.5, 0.7]
-amplitude_values = [0.4, 0.6, 0.8]
-scale_values = [0.1, 0.01, 0.001, 0.0001]
+# octave_values = [2, 4, 6, 8, 10]
+# persistence_values = [0.3, 0.5, 0.7]
+# amplitude_values = [0.4, 0.6, 0.8]
+# scale_values = [0.1, 0.01, 0.001, 0.0001]
 
-total_iterations = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values)
-current_iteration = 0
+# total_iterations = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values)
+# current_iteration = 0
 
-for scale in scale_values:
-    for persistence in persistence_values:
-        for amplitude in amplitude_values:
-            for octaves in octave_values:
-                current_iteration += 1
-                print(f"Iteration {current_iteration} of {total_iterations} - Progress: {(current_iteration / total_iterations) * 100:.2f}% complete")
-                print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}")
-                run_perlin_noise_fractal(
-                    width=width,
-                    height=height,
-                    min_z=min_z,
-                    max_z=max_z,
-                    octaves=octaves,
-                    persistence=persistence,
-                    amplitude=amplitude,
-                    scale=scale,
-                    colors=land_type_colors,
-                    bounds=land_type_boundaries,
-                    show_plots=False,
-                    iterNum=current_iteration
-                )
+# for scale in scale_values:
+#     for persistence in persistence_values:
+#         for amplitude in amplitude_values:
+#             for octaves in octave_values:
+#                 current_iteration += 1
+#                 print(f"Iteration {current_iteration} of {total_iterations} - Progress: {(current_iteration / total_iterations) * 100:.2f}% complete")
+#                 print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}")
+#                 run_perlin_noise_fractal(
+#                     width=width,
+#                     height=height,
+#                     octaves=octaves,
+#                     persistence=persistence,
+#                     amplitude=amplitude,
+#                     scale=scale,
+#                     colors=land_type_colors,
+#                     bounds=land_type_boundaries,
+#                     show_plots=False,
+#                     iterNum=current_iteration
+#                 )
 
-end_time = time.time()  # End timing
-total_time = end_time - start_time
-minutes, seconds = divmod(total_time, 60)
-print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds")
+# end_time = time.time()  # End timing
+# total_time = end_time - start_time
+# minutes, seconds = divmod(total_time, 60)
+# print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds")
