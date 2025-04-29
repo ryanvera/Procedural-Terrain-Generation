@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap, BoundaryNorm
 from noise import pnoise2
-from mpl_toolkits.mplot3d import Axes3D
+import os
 
 def generate_perlin_noise(width, height, scale=100, octaves=6, persistence=0.5, lacunarity=2.0):
     """
-    Generate a 2D Perlin noise array.
+    Generate a 2D Perlin noise array normalized to the range [0, 1].
 
     :param width: Width of the noise map.
     :param height: Height of the noise map.
@@ -13,7 +14,7 @@ def generate_perlin_noise(width, height, scale=100, octaves=6, persistence=0.5, 
     :param octaves: Number of levels of detail.
     :param persistence: Amplitude of each octave.
     :param lacunarity: Frequency of each octave.
-    :return: 2D numpy array of Perlin noise values.
+    :return: 2D numpy array of normalized Perlin noise values.
     """
     noise_array = np.zeros((height, width))
     for y in range(height):
@@ -26,33 +27,50 @@ def generate_perlin_noise(width, height, scale=100, octaves=6, persistence=0.5, 
                                         repeatx=width, 
                                         repeaty=height, 
                                         base=42)
+    # Normalize the noise values to the range [0, 1]
+    min_val = noise_array.min()
+    max_val = noise_array.max()
+    noise_array = (noise_array - min_val) / (max_val - min_val)
     return noise_array
 
-def display_noise(noise_array, mode="2D"):
+def display_noise(noise_array, output_dir, size, land_type_boundaries, land_type_colors, scale, octaves, persistence, lacunarity):
     """
-    Display the Perlin noise as a 2D image or a 3D surface plot.
+    Save the Perlin noise as a 2D image or a 3D surface plot.
 
     :param noise_array: 2D numpy array of Perlin noise values.
     :param mode: Display mode, either "2D" or "3D".
+    :param output_dir: Directory to save the images.
     """
-    if mode == "2D":
-        plt.imshow(noise_array, cmap='gray')
-        plt.colorbar()
-        plt.title("2D Perlin Noise")
-        plt.show()
-    elif mode == "3D":
-        height, width = noise_array.shape
-        x = np.linspace(0, width, width)
-        y = np.linspace(0, height, height)
-        x, y = np.meshgrid(x, y)
+    os.makedirs(output_dir, exist_ok=True)
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.plot_surface(x, y, noise_array, cmap='viridis', edgecolor='none')
-        ax.set_title("3D Perlin Noise")
-        plt.show()
-    else:
-        raise ValueError("Invalid mode. Use '2D' or '3D'.")
+    # Define custom colormap
+    cmap = ListedColormap(land_type_colors)
+    norm = BoundaryNorm(land_type_boundaries, cmap.N)
+
+    # Create a 2D image
+    plt.imshow(noise, cmap=cmap, norm=norm, interpolation='lanczos')
+    plt.colorbar()
+    plt.title("2D Perlin Noise")
+    plt.text(10, size-75, f"Octaves: {octaves}\nPersistence: {persistence}\nLacunarity: {lacunarity}\nScale: {scale}", fontsize=8, color='red', ha='left', va='top')
+    output_path = os.path.join(output_dir, "true_perlin_noise_2D.png")
+    plt.savefig(output_path)
+    plt.close()
+
+
+    # Create a 3D surface plot
+    height, width = noise_array.shape
+    x = np.linspace(0, width, width)
+    y = np.linspace(0, height, height)
+    x, y = np.meshgrid(x, y)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(x, y, noise_array, cmap='viridis', edgecolor='none')
+    ax.set_title("3D Perlin Noise")
+    output_path = os.path.join(output_dir, "true_perlin_noise_3D.png")
+    plt.savefig(output_path)
+    plt.close()
+
 
 if __name__ == "__main__":
     # Parameters for the Perlin noise
@@ -63,11 +81,25 @@ if __name__ == "__main__":
     persistence = 0.5
     lacunarity = 2.0
 
+
+    # Hyperparameters to dictate the land type colors and boundaries
+    water_level = 0.30                                     # Water level for fractal Perlin noise generation
+    land_type_boundaries = [0, water_level, 0.45, 0.70, 0.90, 1]  # Boundaries for different land types
+    land_type_colors = ['blue', 'green', 'darkgreen','grey', 'white']  # Colors for different land types 
+
     # Generate Perlin noise
     noise = generate_perlin_noise(width, height, scale, octaves, persistence, lacunarity)
 
-    # Display Perlin noise in 2D
-    display_noise(noise, mode="2D")
+    # Save Perlin noise in 2D
+    display_noise(noise, \
+                output_dir="images/true_perlin", 
+                land_type_boundaries=land_type_boundaries, \
+                land_type_colors=land_type_colors, \
+                scale=scale, \
+                octaves=octaves, \
+                persistence=persistence, \
+                lacunarity=lacunarity, \
+                size = width \
+                )
 
-    # Display Perlin noise in 3D
-    display_noise(noise, mode="3D")
+
