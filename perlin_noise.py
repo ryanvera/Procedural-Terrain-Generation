@@ -4,6 +4,7 @@ from scipy.ndimage import gaussian_filter
 from matplotlib.colors import ListedColormap, BoundaryNorm
 import os
 import time
+import random
 
 
 
@@ -18,8 +19,6 @@ def generate_permutation() -> np.ndarray[int]:
         np.ndarray[int]: A 1D NumPy array of integers with a length of 512, 
         containing the duplicated and shuffled permutation values.
     """
-
-
     # Create a list of integers from 0 to 255
     permutation = np.arange(256, dtype=int)
     np.random.shuffle(permutation)
@@ -37,8 +36,8 @@ def fade(t:float) -> float:
         t (float): The input value, typically in the range [0, 1].
     Returns:
         float: The smoothed output value after applying the fade function."""
-     
-    return (6 * t ** 5) - (15 * t **4) + (10 * t **3)
+    # 6t^5 - 15t^4 + 10t^3
+    return t * t * t * (t * (t * 6 - 15) + 10)
 
 
 
@@ -67,7 +66,7 @@ def grad(hash:int, x:float, y:float=0, z:float=0) -> float:
 
 
 
-def interplate(a:float, b:float, t:float) -> float:
+def interpolate(a:float, b:float, t:float) -> float:
     """Interpolate between two values using linear interpolation.
     This function smoothly transitions between two values based on the input parameter t.
 
@@ -82,7 +81,7 @@ def interplate(a:float, b:float, t:float) -> float:
 
 
 
-def perlin(x:float, y:float, permutations) -> float:
+def noise(x:float, y:float, permutations) -> float:
     """
     Generates Perlin noise value for the given 3D coordinates (x, y, z).
     Perlin noise is a gradient noise function that produces smooth, natural-looking
@@ -105,42 +104,73 @@ def perlin(x:float, y:float, permutations) -> float:
     """
         
 
-    # Find the grid cell coordinates
-    x_i:int = int(np.floor(x)) & 255  # Wrap to [0, 255]
-    y_i:int = int(np.floor(y)) & 255  # Wrap to [0, 255]
+    # # Find the grid cell coordinates
+    # x_i:int = int(np.floor(x)) & 255  # Wrap to [0, 255]
+    # y_i:int = int(np.floor(y)) & 255  # Wrap to [0, 255]
 
 
-    # Find the relative coordinates within the cell
-    x_f:float = x - np.floor(x)  # Fractional part of x
-    y_f:float = y - np.floor(y)  # Fractional part of y
+    # # Find the relative coordinates within the cell
+    # x_f:float = x - np.floor(x)  # Fractional part of x
+    # y_f:float = y - np.floor(y)  # Fractional part of y
 
 
-    # Fade the curves for smooth interpolation
-    u = fade(x_f)
-    v = fade(y_f)
+    # # Fade the curves for smooth interpolation
+    # u = fade(x_f)
+    # v = fade(y_f)
 
 
-    # Hash coordinates of the cube corners
-    aa = permutations[x_i] + y_i
-    ab = permutations[x_i + 1] + y_i
-    ba = permutations[x_i] + y_i + 1
-    bb = permutations[x_i + 1] + y_i + 1
+    # # Hash coordinates of the cube corners
+    # A = permutations[x_i] + y_i
+    # B = permutations[x_i + 1] + y_i
+    # # ba = permutations[x_i] + y_i + 1
+    # # bb = permutations[x_i + 1] + y_i + 1
         
 
-    # Compute the gradient at each corner of the cube
-    grad_aa = grad(permutations[aa], x_f, y_f)
-    grad_ab = grad(permutations[ab], x_f - 1, y_f)
-    grad_ba = grad(permutations[ba], x_f, y_f - 1)
-    grad_bb = grad(permutations[bb], x_f - 1, y_f - 1)
+    # # Compute the gradient at each corner of the cube
+    # grad_1 = grad(permutations[A], x_f, y_f)
+    # grad_2 = grad(permutations[B], x_f - 1, y_f)
+    # # grad_ba = grad(permutations[ba], x_f, y_f - 1)
+    # # grad_bb = grad(permutations[bb], x_f - 1, y_f - 1)
+    # grad_3 = grad(permutations[A+1], x_f, y_f - 1)
+    # grad_4 = grad(permutations[B+1], x_f - 1, y_f - 1)
 
 
-    # Interpolate between the gradients
-    x1 = interplate(grad_aa, grad_ab, u)  # Interpolate along x-axis
-    x2 = interplate(grad_ba, grad_bb, u)  # Interpolate along x-axis
-    result = interplate(x1, x2, v)  # Interpolate along y-axis
+    # # Interpolate between the gradients
+    # x1 = interpolate(grad_1, grad_2, u)  # Interpolate along x-axis
+    # x2 = interpolate(grad_3, grad_4, u)  # Interpolate along x-axis
+    # result = interpolate(x1, x2, v)  # Interpolate along y-axis
 
-    return result
-    
+    # return result
+    # ==================================================================================
+    X = int(np.floor(x)) & 255
+    Y = int(np.floor(y)) & 255
+        
+    # Find relative x, y of point in square
+    x -= np.floor(x)
+    y -= np.floor(y)
+        
+    # Compute fade curves for x and y
+    u = fade(x)
+    v = fade(y)
+        
+    # Hash coordinates of the 4 square corners
+    A = permutations[X] + Y
+    B = permutations[X + 1] + Y
+    C = permutations[X] + Y + 1
+    D = permutations[X + 1] + Y + 1
+        
+    # Calculate noise contributions from each corner
+    g1 = grad(permutations[A], x, y)
+    g2 = grad(permutations[B], x-1, y)
+    g3 = grad(permutations[C+1], x, y-1)
+    g4 = grad(permutations[D+1], x-1, y-1)
+        
+    # Interpolate the noise values
+    x1 = interpolate(g1, g2, u)
+    x2 = interpolate(g3, g4, u)
+        
+    # Final interpolation
+    return interpolate(x1, x2, v)
 
 
 def generate_perlin_noise(width:int, height:int, scale:float=1.0) -> np.ndarray[float]:
@@ -166,12 +196,11 @@ def generate_perlin_noise(width:int, height:int, scale:float=1.0) -> np.ndarray[
 
     for y in range(height):
         for x in range(width):
-            noise_grid[y, x] = perlin(x * scale, y * scale, perms)  # Generate noise value for each pixel
-
+            noise_grid[y, x] = noise(x * scale, y * scale, perms)  # Generate noise value for each pixel
     return noise_grid
 
-    
 
+    
 def generate_fractal_noise(width: int, height: int, octaves: int, persistence: float, amplitude: float, scale: float) -> np.ndarray[float]:
     """
     Generate a 2D grid of fractal Perlin noise by combining multiple octaves of Perlin noise.
@@ -200,11 +229,75 @@ def generate_fractal_noise(width: int, height: int, octaves: int, persistence: f
 
         for y in range(height):
             for x in range(width):
-                noise_grid[y, x] += perlin(x * frequency, y * frequency, perms) * octave_amplitude
+                noise_grid[y, x] += noise(x * frequency, y * frequency, perms) * octave_amplitude
 
     return noise_grid
 
+# =======================================================================================================================================================
 
+def octave_noise(x, y, permutations, octaves=1, persistence=0.5, lacunarity=2.0):
+    """Generate Perlin noise with multiple octaves for more natural patterns.
+    
+    Args:
+        x, y: Coordinates to generate noise at
+        octaves: Number of octaves to sum
+        persistence: How much each octave contributes to the final result
+        lacunarity: How much the frequency increases with each octave
+        
+    Returns:
+        A float value that is the sum of all octaves, roughly in range [-1, 1]
+    """
+    total = 0
+    frequency = 1
+    amplitude = 1
+    max_value = 0  # Used for normalizing result
+    
+    for _ in range(octaves):
+        total += noise(x * frequency, y * frequency, permutations) * amplitude
+        max_value += amplitude
+        amplitude *= persistence
+        frequency *= lacunarity
+        
+    # Normalize the result
+    return total / max_value if max_value > 0 else 0
+
+
+
+def generate_noise_map(width, height, scale=0.1, octaves=4, persistence=0.5, lacunarity=2.0):
+    """Generate a 2D noise map.
+    
+    Args:
+        width, height: Dimensions of the noise map
+        scale: Level of zoom/detail in the noise
+        octaves: Number of layers of noise
+        persistence: How much each octave contributes
+        lacunarity: How much the frequency increases with each octave
+        
+    Returns:
+        2D list containing noise values typically in range [-1, 1]
+    """
+    permutations = generate_permutation()  # Generate the permutation array
+    noise_map = np.zeros((height, width), dtype=float)
+    
+    # Offsets can be used to sample different areas of the noise
+    offset_x = random.random() * 100
+    offset_y = random.random() * 100
+    
+    for y in range(height):
+        for x in range(width):
+            # Scale coordinates and generate noise
+            nx = (x + offset_x) * scale
+            ny = (y + offset_y) * scale
+            noise_map[y][x] = octave_noise(nx, ny, permutations, octaves, persistence, lacunarity)
+            
+    return noise_map
+
+
+
+
+
+
+# =======================================================================================================================================================
 
 def gaussian_smooth(noise_grid:np.ndarray[float], sigma:float) -> np.ndarray[float]:
     """
@@ -235,10 +328,6 @@ def normalize_range(noise_grid:np.ndarray[float], min_val:float=0, max_val:float
 
     # Normalize the noise grid to the range [0, 1]
     normalized_grid = (noise_grid - min_noise) / (max_noise - min_noise)
-
-    # Scale to the desired range [min_val, max_val]
-    # scaled_grid = normalized_grid * (max_val - min_val) + min_val
-
     return normalized_grid
 
 
@@ -335,10 +424,11 @@ def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitu
     save_filepath = "images/perlin/fractal/fractal_perlin"
 
     print("Generating fractal Perlin noise...")
-    noise = generate_fractal_noise(grid_size[0], grid_size[1], octaves, persistence, amplitude, scale)  # Generate fractal Perlin noise
+    # noise = generate_fractal_noise(grid_size[0], grid_size[1], octaves, persistence, amplitude, scale)  # Generate fractal Perlin noise
+    noise = generate_noise_map(grid_size[0], grid_size[1], scale, octaves, persistence)  # Generate fractal Perlin noise
 
     # Normalize the noise values to a specified range
-    noise = normalize_range(noise)  # Normalize the noise values
+    # noise = normalize_range(noise)  # Normalize the noise values
 
     # Define custom colormap
     cmap = ListedColormap(colors)
@@ -503,11 +593,11 @@ if __name__ == "__main__":
     # run_perlin_noise( size = grid_size, \
     #                 show_plots=False)  # Run the Perlin noise generation and plotting
 
-    run_perlin_noise_gaussian( size=grid_size, \
-                            sigmas=[0, 0.5, 1, 10, 25, 50, 75, 100, 250], \
-                            colors=land_type_colors, \
-                            bounds=land_type_boundaries, \
-                            show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
+    # run_perlin_noise_gaussian( size=grid_size, \
+    #                         sigmas=[0, 0.5, 1, 10, 25, 50, 75, 100, 250], \
+    #                         colors=land_type_colors, \
+    #                         bounds=land_type_boundaries, \
+    #                         show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
 
 
 
