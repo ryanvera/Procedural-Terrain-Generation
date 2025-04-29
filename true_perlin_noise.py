@@ -51,7 +51,7 @@ def display_noise(noise_array, output_dir, size, land_type_boundaries, land_type
     # Create a 2D image
     plt.imshow(noise, cmap=cmap, norm=norm, interpolation='lanczos')
     plt.colorbar()
-    plt.title("2D Perlin Noise")
+    plt.title("2D True Perlin Noise")
     plt.text(10, size-75, f"Octaves: {octaves}\nPersistence: {persistence}\nLacunarity: {lacunarity}\nScale: {scale}", fontsize=8, color='red', ha='left', va='top')
     output_path = os.path.join(output_dir, "true_perlin_noise_2D.png")
     plt.savefig(output_path, dpi=300)
@@ -74,7 +74,7 @@ def display_noise(noise_array, output_dir, size, land_type_boundaries, land_type
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Perlin Noise Value')
-    ax.set_title("3D Perlin Noise")
+    ax.set_title("3D True Perlin Noise")
     fig.text(0.20, 0.80, f"Octaves: {octaves}\nPersistence: {persistence}\nLacunarity: {lacunarity}\nScale: {scale}", fontsize=8, color='red', ha='left', va='top')
     output_path = os.path.join(output_dir, "true_perlin_noise_3D.png")
     plt.savefig(output_path, dpi=300)
