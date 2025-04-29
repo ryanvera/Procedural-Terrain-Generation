@@ -1,5 +1,4 @@
-# Procedural Terrain Generation<br/>
-## Perlin Noise, Diamond Square, and Voronoi Biome
+# Procedural Terrain Generation - Perlin Noise, Diamond Square, and Voronoi Biome
 Ryan Vera<br/>
 Qitong Liu
 
