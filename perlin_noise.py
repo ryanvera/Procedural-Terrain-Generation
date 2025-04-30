@@ -165,16 +165,27 @@ def generate_perlin_noise(width:int, height:int, scale:float=1.0) -> np.ndarray[
 
 
 def octave_noise(x, y, permutations, octaves=1, persistence=0.5, lacunarity=2.0, amplitude=1.0) -> float:
-    """Generate Perlin noise with multiple octaves for more natural patterns.
-    
+    """
+    Generate Perlin noise with multiple octaves for more natural patterns.
+    This function combines multiple layers of Perlin noise, each with increasing
+    frequency and decreasing amplitude, to create more complex and natural-looking
+    patterns. The parameters allow control over the number of layers (octaves),
+    how much each layer contributes (persistence), and how the frequency changes
+    between layers (lacunarity).
+
     Args:
-        x, y: Coordinates to generate noise at
-        octaves: Number of octaves to sum
-        persistence: How much each octave contributes to the final result
-        lacunarity: How much the frequency increases with each octave
-        
+        x (float): The x-coordinate at which to generate noise.
+        y (float): The y-coordinate at which to generate noise.
+        permutations (list[int]): A permutation table used for generating noise.
+        octaves (int, optional): The number of noise layers to combine. Defaults to 1.
+        persistence (float, optional): The factor by which the amplitude decreases 
+            for each successive octave. Defaults to 0.5.
+        lacunarity (float, optional): The factor by which the frequency increases 
+            for each successive octave. Defaults to 2.0.
+        amplitude (float, optional): The initial amplitude of the noise. Defaults to 1.0.
+
     Returns:
-        A float value that is the sum of all octaves, roughly in range [-1, 1]
+        float: The combined noise value, normalized to approximately the range [-1, 1].
     """
     total = 0
     frequency = 1
@@ -192,18 +203,24 @@ def octave_noise(x, y, permutations, octaves=1, persistence=0.5, lacunarity=2.0,
 
 
 def generate_fractal_map(width, height, scale=0.1, octaves=4, persistence=0.5, lacunarity=2.0, amplitude=1.0) -> np.ndarray[float]:
-    """Generate a 2D noise map.
-    
-    Args:
-        width, height: Dimensions of the noise map
-        scale: Level of zoom/detail in the noise
-        octaves: Number of layers of noise
-        persistence: How much each octave contributes
-        lacunarity: How much the frequency increases with each octave
-        
-    Returns:
-        2D list containing noise values typically in range [-1, 1]
     """
+    Generates a 2D fractal noise map using Perlin noise and fractal smoothing.
+    Args:
+        width (int): The width of the noise map in pixels.
+        height (int): The height of the noise map in pixels.
+        scale (float, optional): The scale factor for the noise. Smaller values zoom out, 
+            while larger values zoom in. Defaults to 0.1.
+        octaves (int, optional): The number of layers of noise to combine. Higher values 
+            add more detail. Defaults to 4.
+        persistence (float, optional): The amplitude multiplier for each successive octave. 
+            Lower values reduce the contribution of higher octaves. Defaults to 0.5.
+        lacunarity (float, optional): The frequency multiplier for each successive octave. 
+            Higher values increase the frequency of higher octaves. Defaults to 2.0.
+        amplitude (float, optional): The base amplitude of the noise. Defaults to 1.0.
+    Returns:
+        np.ndarray[float]: A 2D array representing the generated fractal noise map.
+    """
+
     permutations = generate_permutation()  # Generate the permutation array
     noise_map = np.zeros((height, width), dtype=float)
     
@@ -325,25 +342,27 @@ def run_perlin_noise(size:tuple, show_plots:bool) -> None:
 
 def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitude:float, lacunarity:float, scale:float, colors:list[str], bounds:list[float], show_plots:bool, iterNum:int=0) -> None:
     """
-    Generates and visualizes fractal Perlin noise in both 2D and 3D plots.
-    This function creates fractal Perlin noise using the specified parameters, normalizes the noise
-    values to a given range, and visualizes the noise as a 2D grayscale image and a 3D surface plot.
-    The generated plots are saved as image files.\
-    
+    Generates and visualizes fractal Perlin noise in both 2D and 3D, saving the plots as images.
     Args:
-        size (tuple): A tuple containing the width and height of the noise grid.
-        octaves (int): The number of octaves for the fractal noise generation.
-        persistence (float): The persistence value controlling the amplitude of each octave.
+        size (tuple): The dimensions of the noise grid (width, height).
+        octaves (int): The number of layers of noise to combine.
+        persistence (float): The amplitude reduction factor for each octave.
         amplitude (float): The initial amplitude of the noise.
-        scale (float): The scale factor for the noise.
-        colors (list[str]): A list of colors for different land types in the visualization.
-        bounds (list[float]): A list of boundary values for the land types.
-        show_plots (bool): Whether to display the generated plots.
-        iterNum (int, optional): The iteration number for saving unique filenames. Defaults to 0.
-
+        lacunarity (float): The frequency multiplier for each octave.
+        scale (float): The scale of the noise.
+        colors (list[str]): A list of color hex codes or names for the custom colormap.
+        bounds (list[float]): A list of boundary values for the colormap normalization.
+        show_plots (bool): Whether to display the plots interactively.
+        iterNum (int, optional): Iteration number for naming saved files. Defaults to 0.
     Returns:
-        None
+        None: This function does not return any value. It generates and saves plots.
+    Notes:
+        - The function normalizes the generated noise values before plotting.
+        - Two plots are created: a 2D image and a 3D surface plot.
+        - The plots include metadata such as octaves, persistence, amplitude, scale, and lacunarity.
+        - The images are saved in the "images/perlin/fractal/" directory with filenames indicating the plot type and iteration number.
     """
+
     save_filepath = "images/perlin/fractal/fractal_perlin"
 
     print("Generating fractal Perlin noise...")
@@ -508,27 +527,27 @@ if __name__ == "__main__":
     land_type_colors = ['blue', 'green', 'darkgreen','grey', 'white']  # Colors for different land types 
 
 
-    # run_perlin_noise( size = grid_size, \
-    #                 show_plots=False)  # Run the Perlin noise generation and plotting
+    run_perlin_noise( size = grid_size, \
+                    show_plots=False)  # Run the Perlin noise generation and plotting
 
-    # run_perlin_noise_gaussian( size=grid_size, \
-    #                         sigmas=[0, 0.5, 1, 10, 25, 50, 75, 100, 250], \
-    #                         colors=land_type_colors, \
-    #                         bounds=land_type_boundaries, \
-    #                         show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
-
-
-
-
-    run_perlin_noise_fractal( size=grid_size, \
-                            octaves=10, \
-                            persistence=.01, \
-                            amplitude=1.75, \
-                            scale= .01, \
-                            lacunarity=10, \
+    run_perlin_noise_gaussian( size=grid_size, \
+                            sigmas=[0, 0.5, 1, 10, 25, 50, 75, 100, 250], \
                             colors=land_type_colors, \
                             bounds=land_type_boundaries, \
-                            show_plots=False)  # Run the fractal Perlin noise generation and plotting
+                            show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
+
+
+
+
+    # run_perlin_noise_fractal( size=grid_size, \
+    #                         octaves=10, \
+    #                         persistence=.01, \
+    #                         amplitude=1.75, \
+    #                         scale= .01, \
+    #                         lacunarity=10, \
+    #                         colors=land_type_colors, \
+    #                         bounds=land_type_boundaries, \
+    #                         show_plots=False)  # Run the fractal Perlin noise generation and plotting
 
 
 
@@ -537,7 +556,7 @@ octave_values = [2, 4, 6, 8, 10]
 persistence_values = [0.3, 0.5, 0.7]
 amplitude_values = [0.4, 0.6, 0.8, 1.0, 1.5]
 scale_values = [200, 100, 10, 1, 0.1, 0.01]
-lacunarity_values = [1.5, 2.0, 2.5, 3.0]
+lacunarity_values = [1.0, 1.5, 2.0, 2.5, 3.0]
 
 total_iterations = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values) * len(lacunarity_values)
 current_iteration = 0
