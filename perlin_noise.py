@@ -202,7 +202,7 @@ def octave_noise(x, y, permutations, octaves=1, persistence=0.5, lacunarity=2.0,
 
 
 
-def generate_fractal_map(width, height, scale=0.1, octaves=4, persistence=0.5, lacunarity=2.0, amplitude=1.0) -> np.ndarray[float]:
+def generate_fractal_map(width, height, scale=0.1, octaves=4, persistence=0.5, lacunarity=2.0, amplitude=1.0, offset_x=0.0, offset_y=0.0) -> np.ndarray[float]:
     """
     Generates a 2D fractal noise map using Perlin noise and fractal smoothing.
     Args:
@@ -225,8 +225,8 @@ def generate_fractal_map(width, height, scale=0.1, octaves=4, persistence=0.5, l
     noise_map = np.zeros((height, width), dtype=float)
     
     # Offsets can be used to sample different areas of the noise
-    offset_x = random.random() * 100
-    offset_y = random.random() * 100
+    # offset_x = random.random() * 100
+    # offset_y = random.random() * 100
     
     for y in range(height):
         for x in range(width):
@@ -342,7 +342,7 @@ def run_perlin_noise(size:tuple, show_plots:bool) -> None:
 
 
 
-def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitude:float, lacunarity:float, scale:float, colors:list[str], bounds:list[float], show_plots:bool, iterNum:int=0) -> None:
+def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitude:float, lacunarity:float, scale:float, colors:list[str], bounds:list[float], show_plots:bool, iterNum:int=0, offset_x=0, offset_y=0) -> None:
     """
     Generates and visualizes fractal Perlin noise in both 2D and 3D, saving the plots as images.
     Args:
@@ -368,7 +368,7 @@ def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitu
     save_filepath = "images/perlin/fractal/fractal_perlin"
 
     print("Generating fractal Perlin noise...")
-    noise = generate_fractal_map(grid_size[0], grid_size[1], scale, octaves, persistence, lacunarity, amplitude)  # Generate fractal Perlin noise
+    noise = generate_fractal_map(grid_size[0], grid_size[1], scale, octaves, persistence, lacunarity, amplitude, offset_x, offset_y)  # Generate fractal Perlin noise
 
     # Normalize the noise values to a specified range
     noise = normalize_range(noise)  # Normalize the noise values
@@ -535,7 +535,7 @@ if __name__ == "__main__":
     #                 show_plots=False)  # Run the Perlin noise generation and plotting
 
     # run_perlin_noise_gaussian( size=grid_size, \
-    #                         sigmas=[0, 0.5, 1, 10, 25, 50, 75, 100, 250], \
+    #                         sigmas=[0, 0.5, 1, 5, 10, 25, 50, 75, 100], \
     #                         colors=land_type_colors, \
     #                         bounds=land_type_boundaries, \
     #                         show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
@@ -551,6 +551,8 @@ if __name__ == "__main__":
     #                         lacunarity=10, \
     #                         colors=land_type_colors, \
     #                         bounds=land_type_boundaries, \
+    #                         offset_x=random.random() * 100, \
+    #                         offset_y=random.random() * 100, \
     #                         show_plots=False)  # Run the fractal Perlin noise generation and plotting
 
 
@@ -558,7 +560,7 @@ if __name__ == "__main__":
     # Run fractal Perlin noise with various combinations of parameters
     octave_values = [3, 7, 10]
     persistence_values = [1.0]
-    amplitude_values = [0.5, 1.0, 1.5]
+    amplitude_values = [1.0]
     scale_values = [0.05, 0.01, 0.005]
     lacunarity_values = [0.5, 1.0, 2.0]
 
@@ -583,6 +585,8 @@ if __name__ == "__main__":
                             colors=land_type_colors,
                             bounds=land_type_boundaries,
                             show_plots=False,
+                            # offset_x=random.random() * 100,
+                            # offset_y=random.random() * 100,
                             iterNum=current_iteration
                         )
 
