@@ -231,8 +231,8 @@ def generate_fractal_map(width, height, scale=0.1, octaves=4, persistence=0.5, l
     for y in range(height):
         for x in range(width):
             # Scale coordinates and generate noise
-            nx = (x + offset_x) * scale             # Changing the "*" to "/" will invert the scale (larger number equals zoomed in)
-            ny = (y + offset_y) * scale             # Changing the "*" to "/" will invert the scale (larger number equals zoomed in)
+            nx = (x + offset_x) / scale             # Changing the "*" to "/" will invert the scale (larger number equals zoomed in)
+            ny = (y + offset_y) / scale             # Changing the "*" to "/" will invert the scale (larger number equals zoomed in)
             noise_map[y][x] = octave_noise(nx, ny, permutations, octaves, persistence, lacunarity, amplitude)
             
     return noise_map
@@ -337,6 +337,8 @@ def run_perlin_noise(size:tuple, show_plots:bool) -> None:
     if show_plots:
         plt.show()  # Display the plot
     plt.close()
+
+    print("Finished generating Perlin noise\n\n")
 
 
 
@@ -487,6 +489,8 @@ def run_perlin_noise_gaussian(size:tuple, sigmas:list[int], colors:list[str], bo
             plt.show()  # Display the plot
         plt.close()
 
+    print(f"Finished generating Gaussian smoothed Perlin noise\n\n")
+
 
 
 def ensure_folder_structure():
@@ -518,7 +522,7 @@ if __name__ == "__main__":
 
 
     # Hyperparameters for Perlin noise grid
-    grid_size = (256, 256)
+    grid_size = (512, 512)
 
 
     # Hyperparameters to dictate the land type colors and boundaries
@@ -527,15 +531,15 @@ if __name__ == "__main__":
     land_type_colors = ['blue', 'green', 'darkgreen','grey', 'white']  # Colors for different land types 
 
 
-    run_perlin_noise( size = grid_size, \
-                    show_plots=False)  # Run the Perlin noise generation and plotting
+    # run_perlin_noise( size = grid_size, \
+    #                 show_plots=False)  # Run the Perlin noise generation and plotting
 
-    run_perlin_noise_gaussian( size=grid_size, \
-                            sigmas=[0, 0.5, 1, 10, 25, 50, 75, 100, 250], \
-                            colors=land_type_colors, \
-                            bounds=land_type_boundaries, \
-                            show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
-
+    # run_perlin_noise_gaussian( size=grid_size, \
+    #                         sigmas=[0, 0.5, 1, 10, 25, 50, 75, 100, 250], \
+    #                         colors=land_type_colors, \
+    #                         bounds=land_type_boundaries, \
+    #                         show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
+    
 
 
 
@@ -543,7 +547,7 @@ if __name__ == "__main__":
     #                         octaves=10, \
     #                         persistence=.01, \
     #                         amplitude=1.75, \
-    #                         scale= .01, \
+    #                         scale= 100, \
     #                         lacunarity=10, \
     #                         colors=land_type_colors, \
     #                         bounds=land_type_boundaries, \
@@ -551,38 +555,38 @@ if __name__ == "__main__":
 
 
 
-# Run fractal Perlin noise with various combinations of parameters
-octave_values = [2, 4, 6, 8, 10]
-persistence_values = [0.3, 0.5, 0.7]
-amplitude_values = [0.4, 0.6, 0.8, 1.0, 1.5]
-scale_values = [200, 100, 10, 1, 0.1, 0.01]
-lacunarity_values = [1.0, 1.5, 2.0, 2.5, 3.0]
+    # Run fractal Perlin noise with various combinations of parameters
+    octave_values = [3, 7, 10]
+    persistence_values = [1.0]
+    amplitude_values = [0.5, 1.0, 1.5]
+    scale_values = [0.05, 0.01, 0.005]
+    lacunarity_values = [0.5, 1.0, 2.0]
 
-total_iterations = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values) * len(lacunarity_values)
-current_iteration = 0
+    total_iterations = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values) * len(lacunarity_values)
+    current_iteration = 0
 
-for scale in scale_values:
-    for persistence in persistence_values:
-        for amplitude in amplitude_values:
-            for octaves in octave_values:
-                for lacunarity in lacunarity_values:
-                    current_iteration += 1
-                    print(f"Iteration {current_iteration} of {total_iterations} - Progress: {(current_iteration / total_iterations) * 100:.2f}% complete")
-                    print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
-                    run_perlin_noise_fractal(
-                        size=grid_size,
-                        octaves=octaves,
-                        persistence=persistence,
-                        amplitude=amplitude,
-                        scale=scale,
-                        lacunarity=lacunarity,
-                        colors=land_type_colors,
-                        bounds=land_type_boundaries,
-                        show_plots=False,
-                        iterNum=current_iteration
-                    )
+    for scale in scale_values:
+        for persistence in persistence_values:
+            for amplitude in amplitude_values:
+                for octaves in octave_values:
+                    for lacunarity in lacunarity_values:
+                        current_iteration += 1
+                        print(f"Iteration {current_iteration} of {total_iterations} - Progress: {(current_iteration / total_iterations) * 100:.2f}% complete")
+                        print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
+                        run_perlin_noise_fractal(
+                            size=grid_size,
+                            octaves=octaves,
+                            persistence=persistence,
+                            amplitude=amplitude,
+                            scale=scale,
+                            lacunarity=lacunarity,
+                            colors=land_type_colors,
+                            bounds=land_type_boundaries,
+                            show_plots=False,
+                            iterNum=current_iteration
+                        )
 
-end_time = time.time()  # End timing
-total_time = end_time - start_time
-minutes, seconds = divmod(total_time, 60)
-print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds")
+    end_time = time.time()  # End timing
+    total_time = end_time - start_time
+    minutes, seconds = divmod(total_time, 60)
+    print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds\n\n")
