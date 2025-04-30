@@ -1,5 +1,6 @@
 .venv
 .vscode
+.qodo
 
 fractal-multiplication
 fractal-division
