@@ -102,46 +102,6 @@ def noise(x:float, y:float, permutations) -> float:
         - The `grad` function computes the gradient at a given corner.
         - The `interplate` function performs linear interpolation between values.
     """
-        
-
-    # # Find the grid cell coordinates
-    # x_i:int = int(np.floor(x)) & 255  # Wrap to [0, 255]
-    # y_i:int = int(np.floor(y)) & 255  # Wrap to [0, 255]
-
-
-    # # Find the relative coordinates within the cell
-    # x_f:float = x - np.floor(x)  # Fractional part of x
-    # y_f:float = y - np.floor(y)  # Fractional part of y
-
-
-    # # Fade the curves for smooth interpolation
-    # u = fade(x_f)
-    # v = fade(y_f)
-
-
-    # # Hash coordinates of the cube corners
-    # A = permutations[x_i] + y_i
-    # B = permutations[x_i + 1] + y_i
-    # # ba = permutations[x_i] + y_i + 1
-    # # bb = permutations[x_i + 1] + y_i + 1
-        
-
-    # # Compute the gradient at each corner of the cube
-    # grad_1 = grad(permutations[A], x_f, y_f)
-    # grad_2 = grad(permutations[B], x_f - 1, y_f)
-    # # grad_ba = grad(permutations[ba], x_f, y_f - 1)
-    # # grad_bb = grad(permutations[bb], x_f - 1, y_f - 1)
-    # grad_3 = grad(permutations[A+1], x_f, y_f - 1)
-    # grad_4 = grad(permutations[B+1], x_f - 1, y_f - 1)
-
-
-    # # Interpolate between the gradients
-    # x1 = interpolate(grad_1, grad_2, u)  # Interpolate along x-axis
-    # x2 = interpolate(grad_3, grad_4, u)  # Interpolate along x-axis
-    # result = interpolate(x1, x2, v)  # Interpolate along y-axis
-
-    # return result
-    # ==================================================================================
     X = int(np.floor(x)) & 255
     Y = int(np.floor(y)) & 255
         
@@ -153,17 +113,19 @@ def noise(x:float, y:float, permutations) -> float:
     u = fade(x)
     v = fade(y)
         
-    # Hash coordinates of the 4 square corners
+    # Hash coordinates of the 4 corners of the square
     A = permutations[X] + Y
     B = permutations[X + 1] + Y
-    C = permutations[X] + Y + 1
-    D = permutations[X + 1] + Y + 1
-        
-    # Calculate noise contributions from each corner
-    g1 = grad(permutations[A], x, y)
-    g2 = grad(permutations[B], x-1, y)
-    g3 = grad(permutations[C+1], x, y-1)
-    g4 = grad(permutations[D+1], x-1, y-1)
+    AA = permutations[A]
+    AB = permutations[A + 1]
+    BA = permutations[B]
+    BB = permutations[B + 1]
+    
+    # Calculate gradients at the four corners
+    g1 = grad(AA, x, y)
+    g2 = grad(BA, x - 1, y)
+    g3 = grad(AB, x, y - 1)
+    g4 = grad(BB, x - 1, y - 1)
         
     # Interpolate the noise values
     x1 = interpolate(g1, g2, u)
@@ -171,6 +133,7 @@ def noise(x:float, y:float, permutations) -> float:
         
     # Final interpolation
     return interpolate(x1, x2, v)
+
 
 
 def generate_perlin_noise(width:int, height:int, scale:float=1.0) -> np.ndarray[float]:
@@ -200,42 +163,8 @@ def generate_perlin_noise(width:int, height:int, scale:float=1.0) -> np.ndarray[
     return noise_grid
 
 
-    
-def generate_fractal_noise(width: int, height: int, octaves: int, persistence: float, amplitude: float, scale: float) -> np.ndarray[float]:
-    """
-    Generate a 2D grid of fractal Perlin noise by combining multiple octaves of Perlin noise.
 
-    Args:
-        width (int): The width of the noise grid.
-        height (int): The height of the noise grid.
-        octaves (int): The number of octaves for the fractal noise.
-        persistence (float): The persistence value controlling the amplitude of each octave.
-        amplitude (float): The initial amplitude of the noise.
-        scale (float): The scale factor for the noise.
-
-    Returns:
-        np.ndarray[float]: A 2D array of fractal Perlin noise values.
-    
-    Note:
-        This function does not normalize the output. Use `normalize_range` if normalization is required.
-    """
-    perms = generate_permutation()  # Generate the permutation array
-    noise_grid = np.zeros((height, width), dtype=float)
-
-    for octave in range(octaves):
-        print(f"\tGenerating octave {octave + 1} of {octaves}...")
-        frequency = scale * (2 ** octave)
-        octave_amplitude = amplitude * (persistence ** octave)
-
-        for y in range(height):
-            for x in range(width):
-                noise_grid[y, x] += noise(x * frequency, y * frequency, perms) * octave_amplitude
-
-    return noise_grid
-
-# =======================================================================================================================================================
-
-def octave_noise(x, y, permutations, octaves=1, persistence=0.5, lacunarity=2.0):
+def octave_noise(x, y, permutations, octaves=1, persistence=0.5, lacunarity=2.0, amplitude=1.0) -> float:
     """Generate Perlin noise with multiple octaves for more natural patterns.
     
     Args:
@@ -249,21 +178,20 @@ def octave_noise(x, y, permutations, octaves=1, persistence=0.5, lacunarity=2.0)
     """
     total = 0
     frequency = 1
-    amplitude = 1
     max_value = 0  # Used for normalizing result
     
-    for _ in range(octaves):
+    for octave in range(octaves):
         total += noise(x * frequency, y * frequency, permutations) * amplitude
         max_value += amplitude
         amplitude *= persistence
         frequency *= lacunarity
         
     # Normalize the result
-    return total / max_value if max_value > 0 else 0
+    return total / max_value
 
 
 
-def generate_noise_map(width, height, scale=0.1, octaves=4, persistence=0.5, lacunarity=2.0):
+def generate_fractal_map(width, height, scale=0.1, octaves=4, persistence=0.5, lacunarity=2.0, amplitude=1.0) -> np.ndarray[float]:
     """Generate a 2D noise map.
     
     Args:
@@ -286,18 +214,13 @@ def generate_noise_map(width, height, scale=0.1, octaves=4, persistence=0.5, lac
     for y in range(height):
         for x in range(width):
             # Scale coordinates and generate noise
-            nx = (x + offset_x) * scale
-            ny = (y + offset_y) * scale
-            noise_map[y][x] = octave_noise(nx, ny, permutations, octaves, persistence, lacunarity)
+            nx = (x + offset_x) * scale             # Changing the "*" to "/" will invert the scale (larger number equals zoomed in)
+            ny = (y + offset_y) * scale             # Changing the "*" to "/" will invert the scale (larger number equals zoomed in)
+            noise_map[y][x] = octave_noise(nx, ny, permutations, octaves, persistence, lacunarity, amplitude)
             
     return noise_map
 
 
-
-
-
-
-# =======================================================================================================================================================
 
 def gaussian_smooth(noise_grid:np.ndarray[float], sigma:float) -> np.ndarray[float]:
     """
@@ -400,7 +323,7 @@ def run_perlin_noise(size:tuple, show_plots:bool) -> None:
 
 
 
-def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitude:float, scale:float, colors:list[str], bounds:list[float], show_plots:bool, iterNum:int=0) -> None:
+def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitude:float, lacunarity:float, scale:float, colors:list[str], bounds:list[float], show_plots:bool, iterNum:int=0) -> None:
     """
     Generates and visualizes fractal Perlin noise in both 2D and 3D plots.
     This function creates fractal Perlin noise using the specified parameters, normalizes the noise
@@ -424,11 +347,10 @@ def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitu
     save_filepath = "images/perlin/fractal/fractal_perlin"
 
     print("Generating fractal Perlin noise...")
-    # noise = generate_fractal_noise(grid_size[0], grid_size[1], octaves, persistence, amplitude, scale)  # Generate fractal Perlin noise
-    noise = generate_noise_map(grid_size[0], grid_size[1], scale, octaves, persistence)  # Generate fractal Perlin noise
+    noise = generate_fractal_map(grid_size[0], grid_size[1], scale, octaves, persistence, lacunarity, amplitude)  # Generate fractal Perlin noise
 
     # Normalize the noise values to a specified range
-    # noise = normalize_range(noise)  # Normalize the noise values
+    noise = normalize_range(noise)  # Normalize the noise values
 
     # Define custom colormap
     cmap = ListedColormap(colors)
@@ -438,7 +360,7 @@ def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitu
     plt.imshow(noise, cmap=cmap, norm=norm, interpolation='lanczos')
     plt.colorbar()  # Add a color bar to the plot
     plt.title("Fractal Smoothed Perlin Noise")
-    plt.text(10, size[0]-75, f"Octaves: {octaves}\nPersistence: {persistence}\nAmplitude: {amplitude}\nScale: {scale}", fontsize=8, color='red', ha='left', va='top')
+    plt.text(10, size[0]-75, f"Octaves: {octaves}\nPersistence: {persistence}\nAmplitude: {amplitude}\nScale: {scale}\nLacunarity: {lacunarity}", fontsize=8, color='red', ha='left', va='top')
     plt.savefig(f"{save_filepath}_2d_ {iterNum}.png", dpi=300)  # Save the plot as an image
     print("Plotting 2D fractal Perlin noise...")
     if show_plots:
@@ -460,14 +382,10 @@ def run_perlin_noise_fractal(size:tuple, octaves:int, persistence:float, amplitu
 
     # Add a color bar
     cbar = fig.colorbar(land, ax=ax, boundaries=bounds, ticks=bounds)
-    cbar.set_label('Noise Value')
 
     # Labels for the axes
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Perlin Noise Value')
     ax.set_title('Fractal Smoothed Perlin Noise')
-    fig.text(0.20, 0.80, f"Octaves: {octaves}\nPersistence: {persistence}\nAmplitude: {amplitude}\nScale: {scale}", fontsize=8, color='red', ha='left', va='top')
+    fig.text(0.20, 0.80, f"Octaves: {octaves}\nPersistence: {persistence}\nAmplitude: {amplitude}\nScale: {scale}\nLacunarity: {lacunarity}", fontsize=8, color='red', ha='left', va='top')
     print("Plotting 3D fractal Perlin noise...\n")
     plt.savefig(f"{save_filepath}_3d_{iterNum}.png", dpi=300)  # Save the plot as an image
     if show_plots:
@@ -603,10 +521,11 @@ if __name__ == "__main__":
 
 
     run_perlin_noise_fractal( size=grid_size, \
-                            octaves=7, \
-                            persistence=0.5, \
+                            octaves=10, \
+                            persistence=.01, \
                             amplitude=1.75, \
-                            scale=400, \
+                            scale= .01, \
+                            lacunarity=10, \
                             colors=land_type_colors, \
                             bounds=land_type_boundaries, \
                             show_plots=False)  # Run the fractal Perlin noise generation and plotting
@@ -614,35 +533,37 @@ if __name__ == "__main__":
 
 
 # Run fractal Perlin noise with various combinations of parameters
-# octave_values = [2, 4, 6, 8, 10]
-# persistence_values = [0.3, 0.5, 0.7]
-# amplitude_values = [0.4, 0.6, 0.8]
-# scale_values = [0.1, 0.01, 0.001, 0.0001]
+octave_values = [2, 4, 6, 8, 10]
+persistence_values = [0.3, 0.5, 0.7]
+amplitude_values = [0.4, 0.6, 0.8, 1.0, 1.5]
+scale_values = [200, 100, 10, 1, 0.1, 0.01]
+lacunarity_values = [1.5, 2.0, 2.5, 3.0]
 
-# total_iterations = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values)
-# current_iteration = 0
+total_iterations = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values) * len(lacunarity_values)
+current_iteration = 0
 
-# for scale in scale_values:
-#     for persistence in persistence_values:
-#         for amplitude in amplitude_values:
-#             for octaves in octave_values:
-#                 current_iteration += 1
-#                 print(f"Iteration {current_iteration} of {total_iterations} - Progress: {(current_iteration / total_iterations) * 100:.2f}% complete")
-#                 print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}")
-#                 run_perlin_noise_fractal(
-#                     width=width,
-#                     height=height,
-#                     octaves=octaves,
-#                     persistence=persistence,
-#                     amplitude=amplitude,
-#                     scale=scale,
-#                     colors=land_type_colors,
-#                     bounds=land_type_boundaries,
-#                     show_plots=False,
-#                     iterNum=current_iteration
-#                 )
+for scale in scale_values:
+    for persistence in persistence_values:
+        for amplitude in amplitude_values:
+            for octaves in octave_values:
+                for lacunarity in lacunarity_values:
+                    current_iteration += 1
+                    print(f"Iteration {current_iteration} of {total_iterations} - Progress: {(current_iteration / total_iterations) * 100:.2f}% complete")
+                    print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
+                    run_perlin_noise_fractal(
+                        size=grid_size,
+                        octaves=octaves,
+                        persistence=persistence,
+                        amplitude=amplitude,
+                        scale=scale,
+                        lacunarity=lacunarity,
+                        colors=land_type_colors,
+                        bounds=land_type_boundaries,
+                        show_plots=False,
+                        iterNum=current_iteration
+                    )
 
-# end_time = time.time()  # End timing
-# total_time = end_time - start_time
-# minutes, seconds = divmod(total_time, 60)
-# print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds")
+end_time = time.time()  # End timing
+total_time = end_time - start_time
+minutes, seconds = divmod(total_time, 60)
+print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds")

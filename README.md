@@ -13,6 +13,36 @@ This project implements and compares three algorithms commonly used in procedura
 
 The goal is to analyze their performance, visual output, and use cases in computer graphics.
 
+
+## Algorithm Descriptions
+The following section provides a detailed explanation of the three algorithms implemented in this project. Each algorithm is described in terms of its purpose, methodology, and key parameters. By understanding these algorithms, readers can gain insights into their applications in procedural terrain generation and their respective strengths and limitations.
+
+### Perlin Noise
+Perlin Noise is a gradient noise function developed by Ken Perlin, widely used in procedural texture generation. It produces smooth, continuous patterns that resemble natural phenomena such as clouds, terrain, or wood grain. The algorithm works by interpolating random gradients at grid points and blending them to create a coherent noise pattern. It is computationally efficient and supports multi-octave layering to achieve more complex textures. 
+
+In this implementation, smoothing was performed using a fractal method, which combines multiple layers of Perlin Noise at different frequencies and amplitudes. This approach enhances the visual complexity and realism of the generated patterns.
+
+#### Fractal Smoothing Parameters
+- **Octaves**: The number of layers of Perlin Noise combined to create the final texture. Higher values result in more detail.
+- **Persistence**: Controls the amplitude of each successive octave. A lower value reduces the contribution of higher-frequency layers.
+- **Lacunarity**: Determines the frequency of each successive octave. Higher values increase the frequency, creating finer details.
+- **Amplitude**: Controls the intensity of the noise pattern. Higher values increase the contrast between peaks and valleys, creating more pronounced features, while lower values produce smoother, less distinct patterns. Adjusting the amplitude allows for fine-tuning the visual impact of the generated texture.
+- **Scale**: Determines the spacing between the gradients in the Perlin Noise grid. Smaller values result in more compressed patterns with finer details, while larger values produce broader, smoother patterns. Adjusting the scale allows for control over the level of detail in the generated texture.
+
+#### Gaussian Smoothing Parameters
+- **Sigma**: Represents the standard deviation of the Gaussian function used for smoothing Perlin noise. 
+    A higher sigma value results in smoother noise with less detail, while a lower sigma value retains more fine-grained details.
+
+### Diamond Square
+The Diamond Square algorithm is a fractal-based technique for generating heightmaps, often used in terrain generation. It starts with a grid of points, where corner values are initialized. The algorithm alternates between two steps:
+1. **Diamond Step**: Calculates the midpoint of each square by averaging its corners and adding a random offset.
+2. **Square Step**: Calculates the midpoint of each edge by averaging the two adjacent corners and adding a random offset.
+This process is repeated recursively, with the random offset decreasing at each iteration to create realistic terrain with varying levels of detail.
+
+### Voronoi Biome
+Voronoi Biome generation is based on Voronoi diagrams, which partition space into regions based on the proximity to a set of seed points. Each region corresponds to the area closest to a specific seed. This method is commonly used in procedural generation to simulate natural phenomena such as cellular structures, biome distribution, or settlement layouts. By assigning different properties to each region, Voronoi diagrams can create diverse and visually appealing patterns for use in games or simulations.
+
+
 ## File Structure
 ```
 /Project
@@ -30,20 +60,6 @@ The goal is to analyze their performance, visual output, and use cases in comput
 │   └── voronoi/          # Voronoi Biome output images
 ```
 
-
-### Perlin Noise
-Perlin Noise is a gradient noise function developed by Ken Perlin, widely used in procedural texture generation. It produces smooth, continuous patterns that resemble natural phenomena such as clouds, terrain, or wood grain. The algorithm works by interpolating random gradients at grid points and blending them to create a coherent noise pattern. It is computationally efficient and supports multi-octave layering to achieve more complex textures. 
-
-In this implementation, smoothing was performed using a fractal method, which combines multiple layers of Perlin Noise at different frequencies and amplitudes. This approach enhances the visual complexity and realism of the generated patterns.
-
-### Diamond Square
-The Diamond Square algorithm is a fractal-based technique for generating heightmaps, often used in terrain generation. It starts with a grid of points, where corner values are initialized. The algorithm alternates between two steps:
-1. **Diamond Step**: Calculates the midpoint of each square by averaging its corners and adding a random offset.
-2. **Square Step**: Calculates the midpoint of each edge by averaging the two adjacent corners and adding a random offset.
-This process is repeated recursively, with the random offset decreasing at each iteration to create realistic terrain with varying levels of detail.
-
-### Voronoi Biome
-Voronoi Biome generation is based on Voronoi diagrams, which partition space into regions based on the proximity to a set of seed points. Each region corresponds to the area closest to a specific seed. This method is commonly used in procedural generation to simulate natural phenomena such as cellular structures, biome distribution, or settlement layouts. By assigning different properties to each region, Voronoi diagrams can create diverse and visually appealing patterns for use in games or simulations.
 
 ## References
 1.  
