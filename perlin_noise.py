@@ -531,46 +531,47 @@ if __name__ == "__main__":
     land_type_colors = [        'darkblue', "blue", "lightblue", 'darkgreen', 'green','grey', 'white']  # Colors for different land types 
 
 
-    # run_perlin_noise( size = grid_size, \
-    #                 show_plots=False)  # Run the Perlin noise generation and plotting
+    run_perlin_noise( size = grid_size, \
+                    show_plots=False)  # Run the Perlin noise generation and plotting
 
-    # run_perlin_noise_gaussian( size=grid_size, \
-    #                         sigmas=[0, 0.5, 1, 5, 10, 25, 50, 75, 100], \
-    #                         colors=land_type_colors, \
-    #                         bounds=land_type_boundaries, \
-    #                         show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
+    params = [0, 0.5, 1, 5, 10, 25, 50, 75, 100]
+    run_perlin_noise_gaussian( size=grid_size, \
+                            sigmas=params, \
+                            colors=land_type_colors, \
+                            bounds=land_type_boundaries, \
+                            show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
     
 
     # Run fractal Perlin noise with various combinations of parameters
-    octave_values = [1, 3, 5, 7]
-    persistence_values = [0.5, 1.0, 1.5]
-    amplitude_values = [0.25, 0.5, 0.75, 1.0]
-    scale_values = [100, 200, 400, 500]
-    lacunarity_values = [0.5, 1.0]
-    params = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values) * len(lacunarity_values)
-    current_iteration = 0
-    for scale in scale_values:
-        for persistence in persistence_values:
-            for amplitude in amplitude_values:
-                for octaves in octave_values:
-                    for lacunarity in lacunarity_values:
-                        current_iteration += 1
-                        print(f"Iteration {current_iteration} of {params} - Progress: {(current_iteration / params) * 100:.2f}% complete")
-                        print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
-                        run_perlin_noise_fractal(
-                            size=grid_size,
-                            octaves=octaves,
-                            persistence=persistence,
-                            amplitude=amplitude,
-                            scale=scale,
-                            lacunarity=lacunarity,
-                            colors=land_type_colors,
-                            bounds=land_type_boundaries,
-                            show_plots=False,
-                            offset_x=random.random() * 100,
-                            offset_y=random.random() * 100,
-                            iterNum=current_iteration
-                        )
+    # octave_values = [1, 3, 5, 7]
+    # persistence_values = [0.5, 1.0, 1.5]
+    # amplitude_values = [0.25, 0.5, 0.75, 1.0]
+    # scale_values = [100, 200, 400, 500]
+    # lacunarity_values = [0.5, 1.0]
+    # params = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values) * len(lacunarity_values)
+    # current_iteration = 0
+    # for scale in scale_values:
+    #     for persistence in persistence_values:
+    #         for amplitude in amplitude_values:
+    #             for octaves in octave_values:
+    #                 for lacunarity in lacunarity_values:
+    #                     current_iteration += 1
+    #                     print(f"Iteration {current_iteration} of {params} - Progress: {(current_iteration / params) * 100:.2f}% complete")
+    #                     print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
+    #                     run_perlin_noise_fractal(
+    #                         size=grid_size,
+    #                         octaves=octaves,
+    #                         persistence=persistence,
+    #                         amplitude=amplitude,
+    #                         scale=scale,
+    #                         lacunarity=lacunarity,
+    #                         colors=land_type_colors,
+    #                         bounds=land_type_boundaries,
+    #                         show_plots=False,
+    #                         offset_x=random.random() * 100,
+    #                         offset_y=random.random() * 100,
+    #                         iterNum=current_iteration
+    #                     )
 
     # params = [
     #     #octaves, persistence, amplitude, lacunarity, scale
