@@ -76,8 +76,8 @@ def ensure_output_folder():
 
 def plot_terrain(grid: np.ndarray, size: int, title: str, filename_prefix: str, show_plots: bool = True, apply_biomes: bool = True):
     if apply_biomes:
-        colors = ['blue', 'green', 'darkgreen', 'grey', 'white']
-        bounds = [0.0, 0.3, 0.45, 0.7, 0.9, 1.0]
+        colors = ['darkblue', "blue", "lightblue", 'darkgreen', 'green','grey', 'white']
+        bounds = [0, 0.05, 0.20, 0.30, 0.45, 0.70, 0.90, 1]
         cmap = ListedColormap(colors)
         norm = BoundaryNorm(bounds, cmap.N)
     else:

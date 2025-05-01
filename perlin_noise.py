@@ -573,30 +573,30 @@ if __name__ == "__main__":
     #                         iterNum=current_iteration
     #                     )
 
-    # params = [
-    #     #octaves, persistence, amplitude, lacunarity, scale
-    #     (1,         1.0,        0.25,        0.5,      500),
-    #     (1,         1.0,        0.50,        0.5,      500),
-    #     (1,         1.0,        0.75,        0.5,      500),
-    #     (1,         1.0,        1.00,        0.5,      500),
-    # ]
-    # for i, (octaves, persistence, amplitude, lacunarity, scale) in enumerate(params):
-    #     print(f"Iteration {i} of {len(params)} - Progress: {(i / len(params)) * 100:.0f}% complete")
-    #     print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
-    #     run_perlin_noise_fractal(
-    #         size=grid_size,
-    #         octaves=octaves,
-    #         persistence=persistence,
-    #         amplitude=amplitude,
-    #         scale=scale,
-    #         lacunarity=lacunarity,
-    #         colors=land_type_colors,
-    #         bounds=land_type_boundaries,
-    #         show_plots=False,
-    #         offset_x=random.random() * 100,
-    #         offset_y=random.random() * 100,
-    #         iterNum=i
-    # )
+    params = [
+        #octaves, persistence, amplitude, lacunarity, scale
+        (1,         1.0,        0.25,        0.5,      500),
+        (1,         1.0,        0.50,        0.5,      500),
+        (1,         1.0,        0.75,        0.5,      500),
+        (1,         1.0,        1.00,        0.5,      500),
+    ]
+    for i, (octaves, persistence, amplitude, lacunarity, scale) in enumerate(params):
+        print(f"Iteration {i} of {len(params)} - Progress: {(i / len(params)) * 100:.0f}% complete")
+        print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
+        run_perlin_noise_fractal(
+            size=grid_size,
+            octaves=octaves,
+            persistence=persistence,
+            amplitude=amplitude,
+            scale=scale,
+            lacunarity=lacunarity,
+            colors=land_type_colors,
+            bounds=land_type_boundaries,
+            show_plots=False,
+            offset_x=random.random() * 100,
+            offset_y=random.random() * 100,
+            iterNum=i
+    )
         
 
     end_time = time.time()  # End timing
