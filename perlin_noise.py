@@ -547,7 +547,7 @@ if __name__ == "__main__":
     amplitude_values = [0.25, 0.5, 0.75, 1.0]
     scale_values = [100, 200, 400, 500]
     lacunarity_values = [0.5, 1.0]
-    total_iterations = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values) * len(lacunarity_values)
+    params = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values) * len(lacunarity_values)
     current_iteration = 0
     for scale in scale_values:
         for persistence in persistence_values:
@@ -555,7 +555,7 @@ if __name__ == "__main__":
                 for octaves in octave_values:
                     for lacunarity in lacunarity_values:
                         current_iteration += 1
-                        print(f"Iteration {current_iteration} of {total_iterations} - Progress: {(current_iteration / total_iterations) * 100:.2f}% complete")
+                        print(f"Iteration {current_iteration} of {params} - Progress: {(current_iteration / params) * 100:.2f}% complete")
                         print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
                         run_perlin_noise_fractal(
                             size=grid_size,
@@ -567,8 +567,8 @@ if __name__ == "__main__":
                             colors=land_type_colors,
                             bounds=land_type_boundaries,
                             show_plots=False,
-                            # offset_x=random.random() * 100,
-                            # offset_y=random.random() * 100,
+                            offset_x=random.random() * 100,
+                            offset_y=random.random() * 100,
                             iterNum=current_iteration
                         )
 
