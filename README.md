@@ -89,7 +89,12 @@ Generated files follow a structured naming convention:
 - **Perlin Noise (Fractal)**:
   - 2D Plot: `fractal_perlin_2d_<iteration_number>.png`
   - 3D Plot: `fractal_perlin_3d_<iteration_number>.png`
-- **Diamond Square**: `diamond_square_<grid_size>.png`
+- **Diamond Square (with no biome coloring)**:
+  - 2D Plot: `diamond_square_falloff_raw_2d.png`
+  - 2D Plot: `diamond_square_falloff_raw_3d.png`
+- **Diamond Square (with biome coloring)**:
+  - 2D Plot: `diamond_square_sigma<sigma>_biome_2d.png`
+  - 2D Plot: `diamond_square_sigma<sigma>_biome_3d.png`
 - **Voronoi Biome**: `voronoi_biome_<seed_count>.png`
 
 ## License
