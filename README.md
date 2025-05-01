@@ -87,8 +87,8 @@ Generated files follow a structured naming convention:
   - 2D Plot: `gaussian_perlin_2d_<sigma>.png`
   - 3D Plot: `gaussian_perlin_3d_<sigma>.png`
 - **Perlin Noise (Fractal)**:
-  - 2D Plot: `fractal_perlin_2d_<iteration number>.png`
-  - 3D Plot: `fractal_perlin_3d_<iteration number>.png`
+  - 2D Plot: `fractal_perlin_2d_<iteration_number>.png`
+  - 3D Plot: `fractal_perlin_3d_<iteration_number>.png`
 - **Diamond Square**: `diamond_square_<grid_size>.png`
 - **Voronoi Biome**: `voronoi_biome_<seed_count>.png`
 
