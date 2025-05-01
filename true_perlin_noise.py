@@ -84,16 +84,16 @@ def display_noise(noise_array, output_dir, size, land_type_boundaries, land_type
 
 if __name__ == "__main__":
     # Parameters for the Perlin noise
-    size = (256, 256)
+    size = (512, 512)
     octaves = 7
     persistence = 0.50         # Amplitude of each octave
     lacunarity = 1.75          # Frequency of each octave
     scale = 400               # Scale of the noise (higher values zoom out)
 
     # Hyperparameters to dictate the land type colors and boundaries
-    water_level = 0.30                                     # Water level for fractal Perlin noise generation
-    land_type_boundaries = [0, water_level, 0.45, 0.70, 0.90, 1]  # Boundaries for different land types
-    land_type_colors = ['blue', 'green', 'darkgreen','grey', 'white']  # Colors for different land types 
+    water_level = 0.30                                                      # Water level for fractal Perlin noise generation
+    land_type_boundaries = [0,   0.05,      0.20,   water_level,    0.45,       0.70,   0.90,   1]      # Boundaries for different land types
+    land_type_colors = [        'darkblue', "blue", "lightblue", 'darkgreen', 'green','grey', 'white']  # Colors for different land types 
 
 
 
