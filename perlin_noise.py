@@ -541,32 +541,14 @@ if __name__ == "__main__":
     #                         show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
     
 
-
-
-    run_perlin_noise_fractal( size=grid_size, \
-                            octaves=10, \
-                            persistence=.01, \
-                            amplitude=1.75, \
-                            scale= 100, \
-                            lacunarity=10, \
-                            colors=land_type_colors, \
-                            bounds=land_type_boundaries, \
-                            offset_x=random.random() * 100, \
-                            offset_y=random.random() * 100, \
-                            show_plots=False)  # Run the fractal Perlin noise generation and plotting
-
-
-
     # Run fractal Perlin noise with various combinations of parameters
     # octave_values = [3, 7, 10]
     # persistence_values = [1.0]
     # amplitude_values = [1.0]
     # scale_values = [0.05, 0.01, 0.005]
     # lacunarity_values = [0.5, 1.0, 2.0]
-
     # total_iterations = len(octave_values) * len(persistence_values) * len(amplitude_values) * len(scale_values) * len(lacunarity_values)
     # current_iteration = 0
-
     # for scale in scale_values:
     #     for persistence in persistence_values:
     #         for amplitude in amplitude_values:
@@ -590,7 +572,31 @@ if __name__ == "__main__":
     #                         iterNum=current_iteration
     #                     )
 
-    # end_time = time.time()  # End timing
-    # total_time = end_time - start_time
-    # minutes, seconds = divmod(total_time, 60)
-    # print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds\n\n")
+    params = [
+        #octaves, persistence, amplitude, lacunarity, scale
+        (3,         1.0,        0.75,        0.5,      100),
+    ]
+    for i, (octaves, persistence, amplitude, lacunarity, scale) in enumerate(params):
+        current_iteration = i + 1
+        print(f"Iteration {current_iteration} of {len(params)} - Progress: {(current_iteration / len(params)) * 100}% complete")
+        print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
+        run_perlin_noise_fractal(
+            size=grid_size,
+            octaves=octaves,
+            persistence=persistence,
+            amplitude=amplitude,
+            scale=scale,
+            lacunarity=lacunarity,
+            colors=land_type_colors,
+            bounds=land_type_boundaries,
+            show_plots=False,
+            offset_x=random.random() * 100,
+            offset_y=random.random() * 100,
+            iterNum=current_iteration
+    )
+        
+
+    end_time = time.time()  # End timing
+    total_time = end_time - start_time
+    minutes, seconds = divmod(total_time, 60)
+    print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds\n\n")
