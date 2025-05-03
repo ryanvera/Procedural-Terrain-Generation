@@ -687,10 +687,10 @@ if __name__ == "__main__":
 
     # Run combined smoothing of fractal Perlin noise with Gaussian smoothing
     params = [
-        # octaves, persistence, amplitude, lacunarity, scale, sigmas
-        (4, 0.5, 1.0, 2.0, 200, [2, 4, 8]),
-        (6, 0.6, 0.8, 2.5, 300, [3, 6, 9]),
-        (8, 0.7, 0.6, 3.0, 400, [5, 10, 15]),
+        # octaves, persistence, amplitude, lacunarity, scale,   sigmas
+        (4,         0.25,        0.8,        2.0,        200,    [5, 10, 15, 20, 25]),
+        (4,         0.50,        0.8,        2.0,        200,    [5, 10, 15, 20, 25]),
+        (4,         0.75,        0.8,        2.0,        200,    [5, 10, 15, 20, 25]),
     ]
     for i, (octaves, persistence, amplitude, lacunarity, scale, sigmas) in enumerate(params):
         print(f"Iteration {i + 1} of {len(params)} - Progress: {((i + 1) / len(params)) * 100:.0f}% complete")
