@@ -686,30 +686,33 @@ if __name__ == "__main__":
         
 
     # Run combined smoothing of fractal Perlin noise with Gaussian smoothing
-    params = [
-        # octaves, persistence, amplitude, lacunarity, scale,   sigmas
-        (4,         0.25,        0.8,        2.0,        200,    [5, 10, 15, 20, 25]),
-        (4,         0.50,        0.8,        2.0,        200,    [5, 10, 15, 20, 25]),
-        (4,         0.75,        0.8,        2.0,        200,    [5, 10, 15, 20, 25]),
-    ]
-    for i, (octaves, persistence, amplitude, lacunarity, scale, sigmas) in enumerate(params):
-        print(f"Iteration {i + 1} of {len(params)} - Progress: {((i + 1) / len(params)) * 100:.0f}% complete")
-        print(f"Running fractal Gaussian noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}, sigmas={sigmas}")
-        run_fractal_gaussian_noise(
-            size=grid_size,
-            octaves=octaves,
-            persistence=persistence,
-            amplitude=amplitude,
-            lacunarity=lacunarity,
-            scale=scale,
-            sigmas=sigmas,
-            colors=land_type_colors,
-            bounds=land_type_boundaries,
-            show_plots=False,
-            iterNum=i,
-            offset_x=random.random() * 100,
-            offset_y=random.random() * 100
-        )
+    # params = [
+    #     # octaves, persistence, amplitude, lacunarity, scale,   sigmas
+    #     (4,         0.25,        0.8,        2.0,        200,    [5, 10, 15, 20, 25]),
+    #     (4,         0.50,        0.8,        2.0,        200,    [5, 10, 15, 20, 25]),
+    #     (4,         0.75,        0.8,        2.0,        200,    [5, 10, 15, 20, 25]),
+    # ]
+    # for i, (octaves, persistence, amplitude, lacunarity, scale, sigmas) in enumerate(params):
+    #     print(f"Iteration {i + 1} of {len(params)} - Progress: {((i + 1) / len(params)) * 100:.0f}% complete")
+    #     print(f"Running fractal Gaussian noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}, sigmas={sigmas}")
+    #     run_fractal_gaussian_noise(
+    #         size=grid_size,
+    #         octaves=octaves,
+    #         persistence=persistence,
+    #         amplitude=amplitude,
+    #         lacunarity=lacunarity,
+    #         scale=scale,
+    #         sigmas=sigmas,
+    #         colors=land_type_colors,
+    #         bounds=land_type_boundaries,
+    #         show_plots=False,
+    #         iterNum=i,
+    #         offset_x=random.random() * 100,
+    #         offset_y=random.random() * 100
+    #     )
+
+
+
 
     end_time = time.time()  # End timing
     total_time = end_time - start_time
