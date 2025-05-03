@@ -447,13 +447,13 @@ def run_perlin_noise_gaussian(size:tuple, sigmas:list[int], colors:list[str], bo
 
         # Apply Gaussian smoothing to the noise
         print(f"Applying Gaussian smoothing with sigma={sigma}...")
-        noise = gaussian_smooth(noise, sigma)  # Smooth the noise values
+        temp_noise = gaussian_smooth(noise, sigma)  # Smooth the noise values
 
         # Normalize the noise values to a specified range
-        noise = normalize_range(noise)  # Normalize the noise values
+        temp_noise = normalize_range(temp_noise)  # Normalize the noise values
 
         # 2D Plot the smoothed noise
-        plt.imshow(noise, cmap=cmap, norm=norm, interpolation='lanczos')
+        plt.imshow(temp_noise, cmap=cmap, norm=norm, interpolation='lanczos')
         plt.colorbar(ticks=bounds, label='Noise Value')  # Add a color bar to the plot
         plt.title(f"Gaussian Smoothed Perlin Noise, sigma={sigma}")
         plt.savefig(f"{save_filepath}_2d_{sigma}.png", dpi=300)  # Save the plot as an image
@@ -472,7 +472,7 @@ def run_perlin_noise_gaussian(size:tuple, sigmas:list[int], colors:list[str], bo
         ax = fig.add_subplot(111, projection='3d')
 
         # Plot the surface
-        land = ax.plot_surface(x, y, noise, cmap=cmap, norm=norm, edgecolor='none')
+        land = ax.plot_surface(x, y, temp_noise, cmap=cmap, norm=norm, edgecolor='none')
 
         # Add a color bar
         cbar = fig.colorbar(land, ax=ax, boundaries=bounds, ticks=bounds)
@@ -503,8 +503,6 @@ def ensure_folder_structure():
         "images/perlin",
         "images/perlin/fractal",
         "images/perlin/gaussian",
-        "images/diamond_square",
-        "images/voronoi_biome"
     ]
 
     for folder in folders:
@@ -534,7 +532,7 @@ if __name__ == "__main__":
     run_perlin_noise( size = grid_size, \
                     show_plots=False)  # Run the Perlin noise generation and plotting
 
-    params = [0, 0.5, 1, 5, 10, 25, 50, 75, 100]
+    params = [0, 1, 2, 4, 8, 16, 25, 32, 44, 56, 64, 72, 84, 96]
     run_perlin_noise_gaussian( size=grid_size, \
                             sigmas=params, \
                             colors=land_type_colors, \
@@ -573,30 +571,30 @@ if __name__ == "__main__":
     #                         iterNum=current_iteration
     #                     )
 
-    params = [
-        #octaves, persistence, amplitude, lacunarity, scale
-        (1,         1.0,        0.25,        0.5,      500),
-        (1,         1.0,        0.50,        0.5,      500),
-        (1,         1.0,        0.75,        0.5,      500),
-        (1,         1.0,        1.00,        0.5,      500),
-    ]
-    for i, (octaves, persistence, amplitude, lacunarity, scale) in enumerate(params):
-        print(f"Iteration {i} of {len(params)} - Progress: {(i / len(params)) * 100:.0f}% complete")
-        print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
-        run_perlin_noise_fractal(
-            size=grid_size,
-            octaves=octaves,
-            persistence=persistence,
-            amplitude=amplitude,
-            scale=scale,
-            lacunarity=lacunarity,
-            colors=land_type_colors,
-            bounds=land_type_boundaries,
-            show_plots=False,
-            offset_x=random.random() * 100,
-            offset_y=random.random() * 100,
-            iterNum=i
-    )
+    # params = [
+    #     #octaves, persistence, amplitude, lacunarity, scale
+    #     (1,         1.0,        0.25,        0.5,      500),
+    #     (1,         1.0,        0.50,        0.5,      500),
+    #     (1,         1.0,        0.75,        0.5,      500),
+    #     (1,         1.0,        1.00,        0.5,      500),
+    # ]
+    # for i, (octaves, persistence, amplitude, lacunarity, scale) in enumerate(params):
+    #     print(f"Iteration {i} of {len(params)} - Progress: {(i / len(params)) * 100:.0f}% complete")
+    #     print(f"Running fractal Perlin noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}")
+    #     run_perlin_noise_fractal(
+    #         size=grid_size,
+    #         octaves=octaves,
+    #         persistence=persistence,
+    #         amplitude=amplitude,
+    #         scale=scale,
+    #         lacunarity=lacunarity,
+    #         colors=land_type_colors,
+    #         bounds=land_type_boundaries,
+    #         show_plots=False,
+    #         offset_x=random.random() * 100,
+    #         offset_y=random.random() * 100,
+    #         iterNum=i
+    # )
         
 
     end_time = time.time()  # End timing
