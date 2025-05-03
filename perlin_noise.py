@@ -493,6 +493,88 @@ def run_perlin_noise_gaussian(size:tuple, sigmas:list[int], colors:list[str], bo
 
 
 
+def run_fractal_gaussian_noise(size: tuple, octaves: int, persistence: float, amplitude: float, lacunarity: float, scale: float, sigmas: list[int], colors: list[str], bounds: list[float], show_plots: bool = True, iterNum: int = 0, offset_x: float = 0, offset_y: float = 0) -> None:
+    """
+    Generates fractal Perlin noise, applies Gaussian smoothing, and visualizes the results in 2D and 3D plots.
+    Args:
+        size (tuple): The dimensions of the noise grid (width, height).
+        octaves (int): The number of layers of noise to combine.
+        persistence (float): The amplitude reduction factor for each octave.
+        amplitude (float): The initial amplitude of the noise.
+        lacunarity (float): The frequency multiplier for each octave.
+        scale (float): The scale of the noise.
+        sigmas (list[int]): A list of sigma values for Gaussian smoothing.
+        colors (list[str]): A list of colors for different land types in the visualization.
+        bounds (list[float]): A list of boundary values for the land types.
+        show_plots (bool, optional): Whether to display the generated plots. Defaults to True.
+        iterNum (int, optional): Iteration number for naming saved files. Defaults to 0.
+        offset_x (float, optional): X offset for sampling noise. Defaults to 0.
+        offset_y (float, optional): Y offset for sampling noise. Defaults to 0.
+    Returns:
+        None
+    """
+    save_filepath = "images/perlin/combined/combined_fractal_gaussian"
+
+    print("Generating fractal Perlin noise...")
+    noise = generate_fractal_map(size[0], size[1], scale, octaves, persistence, lacunarity, amplitude, offset_x, offset_y)
+
+    # Normalize the fractal noise values
+    noise = normalize_range(noise)
+
+    # Define custom colormap
+    cmap = ListedColormap(colors)
+    norm = BoundaryNorm(bounds, cmap.N)
+
+    # Apply Gaussian smoothing for each sigma value
+    for sigma in sigmas:
+        print(f"Applying Gaussian smoothing with sigma={sigma}...")
+        smoothed_noise = gaussian_smooth(noise, sigma)
+
+        # Normalize the smoothed noise values
+        smoothed_noise = normalize_range(smoothed_noise)
+
+        # 2D Plot the smoothed noise
+        plt.imshow(smoothed_noise, cmap=cmap, norm=norm, interpolation='lanczos')
+        plt.colorbar(ticks=bounds, label='Noise Value')
+        plt.title(f"Fractal Gaussian Smoothed Perlin Noise, sigma={sigma}")
+        plt.text(10, size[0] - 100, f"Octaves: {octaves}\nPersistence: {persistence}\nAmplitude: {amplitude}\nScale: {scale}\nLacunarity: {lacunarity}\nSigma: {sigma}", fontsize=8, color='red', ha='left', va='top')
+        plt.savefig(f"{save_filepath}_2d_{iterNum}_{sigma}.png", dpi=300)
+        print(f"\tPlotting 2D fractal Gaussian smoothed Perlin noise, sigma={sigma}...")
+        if show_plots:
+            plt.show()
+        plt.close()
+
+        # 3D Plot the smoothed noise
+        x = np.linspace(0, size[0] - 1, size[0])
+        y = np.linspace(0, size[1] - 1, size[1])
+        x, y = np.meshgrid(x, y)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Plot the surface
+        land = ax.plot_surface(x, y, smoothed_noise, cmap=cmap, norm=norm, edgecolor='none')
+
+        # Add a color bar
+        cbar = fig.colorbar(land, ax=ax, boundaries=bounds, ticks=bounds)
+        cbar.set_label('Noise Value')
+
+        # Labels for the axes
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Perlin Noise Value')
+        ax.set_title(f'Fractal Gaussian Smoothed Perlin Noise, sigma={sigma}')
+        fig.text(0.20, 0.80, f"Octaves: {octaves}\nPersistence: {persistence}\nAmplitude: {amplitude}\nScale: {scale}\nLacunarity: {lacunarity}\nSigma: {sigma}", fontsize=8, color='red', ha='left', va='top')
+        plt.savefig(f"{save_filepath}_3d_{iterNum}_{sigma}.png", dpi=300)
+        print(f"\tPlotting 3D fractal Gaussian smoothed Perlin noise, sigma={sigma}...")
+        if show_plots:
+            plt.show()
+        plt.close()
+
+    print("Finished generating fractal Gaussian smoothed Perlin noise.\n")
+
+
+
 def ensure_folder_structure():
     """
     Ensures the folder structure for saving images exists.
@@ -503,6 +585,7 @@ def ensure_folder_structure():
         "images/perlin",
         "images/perlin/fractal",
         "images/perlin/gaussian",
+        "images/perlin/combined"
     ]
 
     for folder in folders:
@@ -529,15 +612,18 @@ if __name__ == "__main__":
     land_type_colors = [        'darkblue', "blue", "lightblue", 'darkgreen', 'green','grey', 'white']  # Colors for different land types 
 
 
-    run_perlin_noise( size = grid_size, \
-                    show_plots=False)  # Run the Perlin noise generation and plotting
+    # # Run the basic Perlin noise generation and plotting
+    # run_perlin_noise( size = grid_size, \
+    #                 show_plots=False)  # Run the Perlin noise generation and plotting
 
-    params = [0, 1, 2, 4, 8, 16, 25, 32, 44, 56, 64, 72, 84, 96]
-    run_perlin_noise_gaussian( size=grid_size, \
-                            sigmas=params, \
-                            colors=land_type_colors, \
-                            bounds=land_type_boundaries, \
-                            show_plots=False)  # Run the Gaussian-smoothed Perlin noise generation and plotting
+
+    # Run Perlin noise with Gaussian smoothing
+    # params = [0, 1, 2, 4, 8, 16, 25, 32, 44, 56, 64, 72, 84, 96]
+    # run_perlin_noise_gaussian( size=grid_size, \
+    #                         sigmas=params, \
+    #                         colors=land_type_colors, \
+    #                         bounds=land_type_boundaries, \
+    #                         show_plots=False)
     
 
     # Run fractal Perlin noise with various combinations of parameters
@@ -571,6 +657,8 @@ if __name__ == "__main__":
     #                         iterNum=current_iteration
     #                     )
 
+
+    # Run fractal Perlin noise with various combinations of parameters
     # params = [
     #     #octaves, persistence, amplitude, lacunarity, scale
     #     (1,         1.0,        0.25,        0.5,      500),
@@ -594,8 +682,34 @@ if __name__ == "__main__":
     #         offset_x=random.random() * 100,
     #         offset_y=random.random() * 100,
     #         iterNum=i
-    # )
+    #     )
         
+
+    # Run combined smoothing of fractal Perlin noise with Gaussian smoothing
+    params = [
+        # octaves, persistence, amplitude, lacunarity, scale, sigmas
+        (4, 0.5, 1.0, 2.0, 200, [2, 4, 8]),
+        (6, 0.6, 0.8, 2.5, 300, [3, 6, 9]),
+        (8, 0.7, 0.6, 3.0, 400, [5, 10, 15]),
+    ]
+    for i, (octaves, persistence, amplitude, lacunarity, scale, sigmas) in enumerate(params):
+        print(f"Iteration {i + 1} of {len(params)} - Progress: {((i + 1) / len(params)) * 100:.0f}% complete")
+        print(f"Running fractal Gaussian noise with octaves={octaves}, persistence={persistence}, amplitude={amplitude}, scale={scale}, lacunarity={lacunarity}, sigmas={sigmas}")
+        run_fractal_gaussian_noise(
+            size=grid_size,
+            octaves=octaves,
+            persistence=persistence,
+            amplitude=amplitude,
+            lacunarity=lacunarity,
+            scale=scale,
+            sigmas=sigmas,
+            colors=land_type_colors,
+            bounds=land_type_boundaries,
+            show_plots=False,
+            iterNum=i,
+            offset_x=random.random() * 100,
+            offset_y=random.random() * 100
+        )
 
     end_time = time.time()  # End timing
     total_time = end_time - start_time
